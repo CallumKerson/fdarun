@@ -1,9 +1,15 @@
 //! fdarun gives allowlisted launchd jobs Full Disk Access.
+//!
+//! Grant Full Disk Access to fdarun, then have a job run
+//! `fdarun exec PROGRAM [ARGUMENT ...]`. fdarun checks the job may run exactly
+//! that command and that its program is unchanged, then replaces itself with
+//! it, so the program runs with fdarun's access.
 
 mod allowlist;
 mod caller;
 mod run;
 
+use std::env;
 use std::fs::File;
 use std::io;
 use std::path::Path;
@@ -22,6 +28,11 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Run a program, if the calling launchd job may run it
+    Exec {
+        #[arg(required = true, trailing_var_arg = true, allow_hyphen_values = true)]
+        argv: Vec<String>,
+    },
     /// List the jobs and the command each may run
     List,
     /// Allow a job to run a program, pinning the program as it is now. Needs root
@@ -63,6 +74,16 @@ fn main() -> ExitCode {
 fn dispatch(command: Command) -> Result<ExitCode, String> {
     let path = Path::new(allowlist::PATH);
     match command {
+        Command::Exec { argv } => {
+            let list = allowlist::load(path, 0)?;
+            let service_name = env::var("XPC_SERVICE_NAME").ok();
+            let parent = std::os::unix::process::parent_id();
+            let (label, domain) =
+                caller::identify(service_name.as_deref(), parent, caller::euid())?;
+            run::authorise(&list, domain, &label, &argv)?;
+            let err = run::exec(&argv);
+            Err(format!("{}: {err}", argv[0]))
+        }
         Command::List => {
             let list = allowlist::load(path, 0)?;
             print_list(&list);
