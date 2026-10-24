@@ -1,0 +1,19 @@
+[graph]
+all-features = false
+# fdarun only runs on macOS
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin"]
+
+[advisories]
+yanked = "deny"
+
+[licenses]
+allow = ["Apache-2.0", "MIT", "Unicode-3.0"]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-git = "deny"
+unknown-registry = "deny"
