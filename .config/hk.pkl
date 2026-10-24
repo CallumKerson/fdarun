@@ -8,7 +8,6 @@ min_hk_version = "2.7.0"
 exclude = List(".config/mise/locks/**", "CHANGELOG.md", "LICENSE")
 
 local linters = new Mapping<String, Step> {
-  ["jactionlint"] = Builtins.jactionlint
   ["byte_order_marker"] = Builtins.byte_order_marker
   ["cargo_clippy"] = (Builtins.cargo_clippy) {
     check =
@@ -28,6 +27,7 @@ local linters = new Mapping<String, Step> {
   ["check_symlinks"] = Builtins.check_symlinks
   ["detect_private_key"] = Builtins.detect_private_key
   ["fix_smart_quotes"] = Builtins.fix_smart_quotes
+  ["jactionlint"] = Builtins.jactionlint
   // Other file types have their own linters
   ["json"] = (Builtins.oxfmt) {
     glob = List("**/*.json", "**/*.jsonc")
