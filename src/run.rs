@@ -1,8 +1,10 @@
-//! Checking a command line against the allowlist.
+//! Checking a command line against the allowlist, then running it.
 
 use std::fs::File;
 use std::io::{self, Read};
+use std::os::unix::process::CommandExt;
 use std::path::Path;
+use std::process::Command;
 
 use sha2::{Digest, Sha256};
 
@@ -68,6 +70,11 @@ pub fn check_unchanged(entry: &Entry) -> Result<(), String> {
         ));
     }
     Ok(())
+}
+
+/// Replace this process with `argv`. Only returns if that fails.
+pub fn exec(argv: &[String]) -> io::Error {
+    Command::new(&argv[0]).args(&argv[1..]).exec()
 }
 
 fn program(argv: &[String]) -> Result<&Path, String> {
