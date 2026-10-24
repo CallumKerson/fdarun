@@ -5,6 +5,10 @@ name: CI
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions: {}
 
 env:
@@ -13,6 +17,7 @@ env:
 jobs:
   lint-title:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       pull-requests: read
     steps:
@@ -26,6 +31,7 @@ jobs:
   ci:
     # fdarun only builds for macOS
     runs-on: macos-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:

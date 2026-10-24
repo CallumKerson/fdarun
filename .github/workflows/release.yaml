@@ -6,6 +6,12 @@ on:
     branches:
       - main
 
+# Queue releases rather than cancel one half-way through
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+  queue: max
+
 permissions: {}
 
 env:
@@ -15,6 +21,7 @@ jobs:
   # Only release what passes CI
   ci:
     runs-on: macos-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -31,7 +38,7 @@ jobs:
   release:
     needs: ci
     runs-on: ubuntu-latest
-    concurrency: release
+    timeout-minutes: 15
     permissions: {}
     steps:
       # Unlike GITHUB_TOKEN, the App's token lets the release trigger the
