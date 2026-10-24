@@ -6,6 +6,12 @@ on:
     types:
       - published
 
+# Queue releases rather than cancel one half-way through
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+  queue: max
+
 permissions: {}
 
 env:
@@ -16,6 +22,7 @@ jobs:
   # end up in a release
   build:
     runs-on: macos-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -38,6 +45,7 @@ jobs:
   upload:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
@@ -56,6 +64,7 @@ jobs:
   packslip:
     needs: upload
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       id-token: write
@@ -77,6 +86,7 @@ jobs:
   publish-packslip:
     needs: packslip
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:

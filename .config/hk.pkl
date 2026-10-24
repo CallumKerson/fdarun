@@ -8,7 +8,7 @@ min_hk_version = "2.7.0"
 exclude = List(".config/mise/locks/**", "CHANGELOG.md", "LICENSE")
 
 local linters = new Mapping<String, Step> {
-  ["actionlint"] = Builtins.actionlint
+  ["jactionlint"] = Builtins.jactionlint
   ["byte_order_marker"] = Builtins.byte_order_marker
   ["cargo_clippy"] = (Builtins.cargo_clippy) {
     check =
@@ -42,7 +42,6 @@ local linters = new Mapping<String, Step> {
   ["trailing_whitespace"] = Builtins.trailing_whitespace
   ["typos"] = Builtins.typos
   ["yaml"] = Builtins.ryl
-  ["zizmor"] = Builtins.zizmor
 }
 
 local commit_message_check = new Mapping<String, Step> {
